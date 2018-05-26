@@ -1,0 +1,11 @@
+old/
+sections/backup/
+data/
+atlas/
+__pycache__/
+access.log
+sql.py
+main.py
+wants.txt
+Heatmap_List.txt
+sections/

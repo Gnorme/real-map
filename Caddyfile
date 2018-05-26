@@ -1,0 +1,5 @@
+localhost:2015
+proxy /getMarkers :7005
+proxy /getDetails :7005
+proxy /searchLoc :7005
+log    access.log

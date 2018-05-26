@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title>Montreal Property Data</title>
+	    <link rel="stylesheet" href="css/leaflet.css"/>
+	    <link rel="stylesheet" href="css/leaflet-search.css"/>
+	    <link rel="stylesheet" href="css/leaflet-groupedlayercontrol.css"/>
+	    <link rel="stylesheet" href="css/lato.css" >
+	    <link rel="stylesheet" href="css/info.css" >
+	    <style>
+	      /* Always set the map height explicitly to define the size of the div
+	       * element that contains the map. */
+	      /* Optional: Makes the sample page fill the window. */
+	      #map{ height: 99%; width: 99%; float:left;position: absolute !important; }
+	    </style>
+	</head>
+	<body>
+	    <div id="map"></div>
+	    	<div class="leaflet-bottom" id="loader">
+	    		<table style="height:100%">
+	    		<tr>
+	    			<td><img src="images/loader-6.svg" /></td>
+		    		<td>
+		    			Loading data ...
+		    		</td>
+		    	</tr>
+		    </table>
+	    	</div>
+	      <div class="leaflet-bottom leaflet-left" id="info-container">
+	      	<div id="history">
+	      		<div class="title-container">
+	      			<div class="info-title">
+	      				History of property
+	      			</div>
+	      			<div class="close" style="float:left;">X</div>
+	      		</div>
+	      		<div class="info-section">
+	      			<canvas id="idvChart" width="100" height="35"></canvas>
+	      		</div>	      		
+	      		<div class="info-section">
+	      			<div class="info-row">
+	      				<div class="info-label">
+	      					Current Owner
+	      				</div>
+	      				<div class="info-value" style="font-size: 20px;" id="owner">
+	      					Bob Barker
+	      				</div>	      				
+	      			</div>	      			
+	      			<div class="info-row">
+	      				<div class="info-label">
+	      					Current property price
+	      				</div>
+	      				<div class="info-value" id="property_value">
+	      					$300,000
+	      				</div>    				
+	      			</div>
+	      		</div>
+	      			<div class="info-section">
+	      				<div class="info-col">
+	      					<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Land Value
+			      				</div>
+			      				<div class="info-value-s" id="land_value">
+			      					$200,000
+			      				</div>	 
+			      			</div>
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Land Area
+			      				</div>
+			      				<div class="info-value-s" id="land_area">
+			      					150m2
+			      				</div>
+			      			</div>	 
+		      			<div class="info-row-s">
+		      				<div class="info-label-s">
+		      					Year constructed
+		      				</div>
+		      				<div class="info-value-s" id="year_constructed">
+		      					1982
+		      				</div>	      				
+		      			</div>				      					      				 
+		      			</div>    	
+		      			<div class="info-col">
+		      				<div class="info-row-s">			
+				  				<div class="info-label-s">
+				  					Building Value
+				  				</div>
+				  				<div class="info-value-s" id="building_value">
+				  					$100,000
+				  				</div>	
+				  			</div>
+				  			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Floor area
+			      				</div>
+			      				<div class="info-value-s" id="floor_area">
+			      					100m2
+			      				</div>	
+			      			</div>   
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Physical link
+			      				</div>
+			      				<div class="info-value-s" id="physical_link">
+			      					Detached
+			      				</div>	      				
+			      			</div>  			      			   							  				
+			  			</div>
+			  		</div>	  				      				  			      				      			    			      			
+	      		</div>  	
+	      	<div id="averages">
+	      		<div class="title-container">
+	      			<div class="info-title">
+	      				Average price and annual change
+	      			</div>
+	      			<div class="close" style="float:left;">X</div>
+	      		</div>
+	      		<div class="info-section">
+	      			<canvas id="avgChart" width="100" height="30"></canvas>
+	      		</div>
+	      		<div class="info-section">
+	      			<div class="info-row">
+	      				<div class="info-label">
+	      					Average property price
+	      				</div>
+	      				<div class="info-value" id="avg_price">
+	      					$300,000
+	      				</div>
+	      			</div>
+	      			<div class="info-row">
+	      				<div class="info-label">
+	      					Annual price change
+	      				</div>
+	      				<div class="info-value" id="avg_change">
+	      					15.0%
+	      				</div>	      				
+	      			</div>
+	      		</div>
+	      </div>
+	    </div>
+	      <div class="leaflet-bottom leaflet-left" id="compare-container">
+	      	<div id="compare-history">
+	      		<div class="title-container">
+	      			<div class="info-title">
+	      				Compare
+	      			</div>
+	      			<div class="close" style="float:left;">X</div>
+	      		</div> 		
+	      			<div class="info-section">
+	      				<div class="info-col">
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Current Owner
+			      				</div>
+			      				<div class="info-value-s" id="c-owner">
+			      					Bob Barker
+			      				</div>	      				
+			      			</div>	
+	      					<div class="info-row-s">	      						
+			      				<div class="info-label-s">
+			      					Land Value
+			      				</div>
+			      				<div class="info-value-s" id="c-land_value">
+			      					$200,000
+			      				</div>	 
+			      			</div>
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Land Area
+			      				</div>
+			      				<div class="info-value-s" id="c-land_area">
+			      					150m2
+			      				</div>
+			      			</div>	 
+		      			<div class="info-row-s">
+		      				<div class="info-label-s">
+		      					Year constructed
+		      				</div>
+		      				<div class="info-value-s" id="c-year_constructed">
+		      					1982
+		      				</div>	      				
+		      			</div>				      					      				 
+		      			</div>    	
+		      			<div class="info-col">
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Current value
+			      				</div>
+			      				<div class="info-value-s" id="c-property_value">
+			      					$300,000
+			      				</div>    				
+			      			</div>		      				
+		      				<div class="info-row-s">			
+				  				<div class="info-label-s">
+				  					Building Value
+				  				</div>
+				  				<div class="info-value-s" id="c-building_value">
+				  					$100,000
+				  				</div>	
+				  			</div>
+				  			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Floor area
+			      				</div>
+			      				<div class="info-value-s" id="c-floor_area">
+			      					100m2
+			      				</div>	
+			      			</div>   
+			      			<div class="info-row-s">
+			      				<div class="info-label-s">
+			      					Physical link
+			      				</div>
+			      				<div class="info-value-s" id="c-physical_link">
+			      					Detached
+			      				</div>	      				
+			      			</div>  			      			   							  				
+			  			</div>
+			  		</div>	  				      				  			      				      			    			      			
+	      		</div>
+	      	</div>   	
+
+	    
+	  
+	    <script src="js/jquery-min.js"></script>
+	    <script src="js/chart.js"></script>
+	    <script src="js/leaflet.js"></script>  
+	    <script src="js/turf.js"></script>
+	    <script src="js/leaflet-groupedlayercontrol.js"></script>
+	    <script src="js/chroma.js"></script>
+	    <script src="js/leaflet-search.js"></script>
+	    <script src="js/canvas.js"></script>
+	    <script>
+
+   	</body>
+</html>
